@@ -1,7 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Footer from './components/Footer';
-import Header from './components/Header';
 import Home from './pages/Home';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -16,19 +14,19 @@ import DoctorProfile from './pages/DoctorProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageDoctor from './pages/ManageDoctor';
 import ManagePatient from './pages/ManagePatient';
+import LoginRegister from './pages/LoginRegister';
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Header />
+      <BrowserRouter>        
         <Routes>
           <Route path='/' element={<Home />}></Route>
           <Route path='/home' element={<Home />}></Route>
           <Route path='/about' element={<About />}></Route>
           <Route path='/contact' element={<Contact />}></Route>
-          <Route path='/login' element={<Login />}></Route>
-          <Route path='/register' element={<Register />}></Route>
+          <Route path='/login' element={<LoginRegister/>}></Route>
+          <Route path='/register' element={<LoginRegister/>}></Route>
           <Route path='/forgotpassword' element={<ForgotPassword/>}></Route>
           <Route path='/dashboard' element={<Dashboard />}></Route>
           <Route path='/profile' element={<Profilepage />}></Route>
@@ -38,8 +36,7 @@ function App() {
           <Route path='/admindashboard' element={<AdminDashboard />}></Route>
           <Route path='/managedoctor' element={<ManageDoctor />}></Route>
           <Route path='/managepatient' element={<ManagePatient />}></Route>
-        </Routes>
-        <Footer />
+        </Routes>       
       </BrowserRouter>
     </div>
   );

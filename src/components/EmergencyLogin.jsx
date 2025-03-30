@@ -1,24 +1,50 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const EmergencyLogin = ()=>{
+    const [name,setName] = useState('');
+    const [dob,setDob] = useState('');
+    const [role,setRole] = useState('patient');
 
+    const navigate = useNavigate();
 
-    const [name,setName] = useState('')
-    const [dob,setDob] = useState('')
+    const sampleUsers = [
+        { name: "kumaran", dob: "30-03-2025", role:"patient"},
+        { name: "john" ,dob: "30-03-2025", role: "doctor"}
+    ];
 
-    function handleName (e){
-        setName(e.target.value);
+    function formatDate(inputDate) {
+        const parts = inputDate.split("-");
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
-
-    function handleDob(e){
-        setDob(e.target.value);
-    }
+    const formattedDob = formatDate(dob);
 
     function handleLogin(e){
         e.preventDefault();
 
-        const user ={name,dob};
-        console.log(user);
+        const user = sampleUsers.find((user) => user.name === name && user.dob === formattedDob && user.role === role);
+
+        if (!name.trim()) {
+            Swal.fire("Error", "Name cannot be empty", "error");
+            return;
+        }
+        if (!dob) {
+            Swal.fire("Error", "Date of birth cannot be empty", "error");
+            return;
+        }
+
+        if (user) {
+
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("userRole", user.role);
+
+            Swal.fire("Success", "Login Successful!", "success").then(() => {
+            navigate(user.role === "patient" ? "/dashboard" : "/doctordashboard");
+            });
+          } else {
+            Swal.fire("Error", "Invalid email or password.", "error");
+          }        
     }
 
     return(
@@ -31,7 +57,7 @@ const EmergencyLogin = ()=>{
                             id="floatingInput"
                             name="text"
                             value={name}
-                            onChange={handleName}
+                            onChange={(e) => setName(e.target.value)}
                             placeholder="Enter your Name"
                             required
                             autoComplete="off"
@@ -43,13 +69,37 @@ const EmergencyLogin = ()=>{
                             id="floatingDate"
                             name="dob"
                             value={dob}
-                            onChange={handleDob}
+                            onChange={(e) => setDob(e.target.value)}
                             placeholder="Enter your Date of Birth"
                             required
                             autoComplete="off"
                             className="form-control"  />
                         <label for="floatingDate">Date of Birth</label>
                     </div>
+                    {/* role */}
+                    <div className="mb-3 p-2">
+                        <label className="form-label d-block fw-medium text-start">Select Role:</label>
+                        <div className="d-flex align-items-center">
+                            <input type="radio" 
+                                id="doctor" 
+                                name="role" 
+                                value="doctor"
+                                checked={role === "doctor"} 
+                                onChange={(e) => setRole(e.target.value)}
+                                className="me-1" />
+                            <label htmlFor="doctor" className="me-3">Doctor</label>
+
+                            <input type="radio" 
+                                id="patient" 
+                                name="role" 
+                                value="patient"
+                                checked={role === "patient"} 
+                                onChange={(e) => setRole(e.target.value)}
+                                className="me-1" />
+                            <label htmlFor="patient">Patient</label>
+                        </div>
+                    </div>
+
                     <div class="col-12 mt-4">
                         <button type="submit" className="btn btn-success w-100" onClick={handleLogin}>Login</button>
                     </div>

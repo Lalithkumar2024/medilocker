@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const Dashboard = ({ userName = "Kumaran" }) => {
   const [selectedDoctor, setSelectedDoctor] = useState("");
@@ -44,102 +46,104 @@ const Dashboard = ({ userName = "Kumaran" }) => {
 
   return (
     <div className="dashboard">
-      <section className="dashboardsection">
-        <div className="container mt-4">
-          <h2 className="text-start">Dashboard</h2>
-          <h3 className="text-start mt-3">Welcome, {userName}!</h3>
-          <div className="mt-4">
-            <h4>Book an Appointment</h4>
-            <hr className="border border-3 border-success" />
+      <Header/>
+        <section className="dashboardsection">
+          <div className="container mt-4">
+            <h2 className="text-start">Dashboard</h2>
+            <h3 className="text-start mt-3">Welcome, {userName}!</h3>
+            <div className="mt-4">
+              <h4>Book an Appointment</h4>
+              <hr className="border border-3 border-success" />
 
-            <div className="row g-3 mt-2">
-              <div className="col-md-4">
-                <div className="form-floating">
-                  <select
-                    className="form-control"
-                    id="floatingDoctor"
-                    value={selectedDoctor}
-                    onChange={handleChange}
+              <div className="row g-3 mt-2">
+                <div className="col-md-4">
+                  <div className="form-floating">
+                    <select
+                      className="form-control"
+                      id="floatingDoctor"
+                      value={selectedDoctor}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select a Doctor</option>
+                      {doctors.map((doctor, index) => (
+                        <option key={index} value={doctor.name}>
+                          {doctor.name}
+                        </option>
+                      ))}
+                    </select>
+                    <label htmlFor="floatingDoctor">Choose a Doctor</label>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating">
+                    <input
+                      type="date"
+                      className="form-control"
+                      id="floatingDate"
+                      value={appointmentDate}
+                      onChange={(e) => setAppointmentDate(e.target.value)}
+                    />
+                    <label htmlFor="floatingDate">Select Date</label>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating">
+                    <input
+                      type="time"
+                      className="form-control"
+                      id="floatingTime"
+                      value={appointmentTime}
+                      onChange={(e) => setAppointmentTime(e.target.value)}
+                      disabled={!selectedDoctor}
+                    />
+                    <label htmlFor="floatingTime">Select Time</label>
+                  </div>
+                  {selectedDoctor && getUnavailableTimes().includes(appointmentTime) && (
+                    <p className="text-danger mt-2"> This time slot is unavailable!</p>
+                  )}
+                </div>
+                <div className="col-md-12 d-flex justify-content-end">
+                  <button
+                    className="btn btn-success appointment-btn"
+                    onClick={handleBookAppointment}
+                    disabled={
+                      !selectedDoctor ||
+                      !appointmentDate ||
+                      !appointmentTime ||
+                      getUnavailableTimes().includes(appointmentTime)
+                    }
                   >
-                    <option value="">Select a Doctor</option>
-                    {doctors.map((doctor, index) => (
-                      <option key={index} value={doctor.name}>
-                        {doctor.name}
-                      </option>
-                    ))}
-                  </select>
-                  <label htmlFor="floatingDoctor">Choose a Doctor</label>
+                    Book Appointment
+                  </button>
                 </div>
-              </div>
-              <div className="col-md-4">
-                <div className="form-floating">
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="floatingDate"
-                    value={appointmentDate}
-                    onChange={(e) => setAppointmentDate(e.target.value)}
-                  />
-                  <label htmlFor="floatingDate">Select Date</label>
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="form-floating">
-                  <input
-                    type="time"
-                    className="form-control"
-                    id="floatingTime"
-                    value={appointmentTime}
-                    onChange={(e) => setAppointmentTime(e.target.value)}
-                    disabled={!selectedDoctor}
-                  />
-                  <label htmlFor="floatingTime">Select Time</label>
-                </div>
-                {selectedDoctor && getUnavailableTimes().includes(appointmentTime) && (
-                  <p className="text-danger mt-2"> This time slot is unavailable!</p>
-                )}
-              </div>
-              <div className="col-md-12 d-flex justify-content-end">
-                <button
-                  className="btn btn-success"
-                  onClick={handleBookAppointment}
-                  disabled={
-                    !selectedDoctor ||
-                    !appointmentDate ||
-                    !appointmentTime ||
-                    getUnavailableTimes().includes(appointmentTime)
-                  }
-                >
-                  Book Appointment
-                </button>
               </div>
             </div>
+            <div className="mt-5">
+              <h4>My Appointments</h4>
+              <hr className="border border-3 border-success" />
+              {appointments.length === 0 ? (
+                <p className="text-muted">No active appointments.</p>
+              ) : (
+                <ul className="list-group">
+                  {appointments.map((appointment, index) => (
+                    <li key={index} className="list-group-item d-flex justify-content-between">
+                      <span>
+                        {appointment.date} -  {appointment.time} - {appointment.doctor}
+                      </span>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleCancelAppointment(index)}
+                      >
+                        Cancel
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <div className="mt-5">
-            <h4>My Appointments</h4>
-            <hr className="border border-3 border-success" />
-            {appointments.length === 0 ? (
-              <p className="text-muted">No active appointments.</p>
-            ) : (
-              <ul className="list-group">
-                {appointments.map((appointment, index) => (
-                  <li key={index} className="list-group-item d-flex justify-content-between">
-                    <span>
-                       {appointment.date} -  {appointment.time} - {appointment.doctor}
-                    </span>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleCancelAppointment(index)}
-                    >
-                      Cancel
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      </section>
+        </section>
+      <Footer/>
     </div>
   );
 };

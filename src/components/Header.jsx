@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import "../index.css";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
@@ -37,16 +38,16 @@ const Header = () => {
           </button>
           <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul className="navbar-nav fs-5 fw-bold">
-              <li className="nav-item"><a className="nav-link active" href="/">Home</a></li>
-              <li className="nav-item"><a className="nav-link" href="/about">About Us</a></li>
-              <li className="nav-item"><a className="nav-link" href="/contact">Contact Us</a></li>
+              <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/" ? "active-link" : ""}`} href="/">Home</a></li>
+              <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/about" ? "active-link" : ""}`} href="/about">About Us</a></li>
+              <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/contact" ? "active-link" : ""}`} href="/contact">Contact Us</a></li>
             </ul>
           </div>
           <div className="d-flex ms-auto align-items-center">
             {!isLoggedIn ? (
               <>
-                <a className="btn me-3 fw-bold rounded-pill" href="/login">Log In</a>
-                <a className="btn btn-success px-4 rounded-pill text-black" href="/register">Sign Up</a>
+                <a className="btn me-3 fw-bold rounded-pill btn-effect" href="/login">Log In</a>
+                <a className="btn btn-success fw-bold px-4 rounded-pill btn-effect" href="/register">Sign Up</a>
               </>
             ) : (
               <div className="dropdown">

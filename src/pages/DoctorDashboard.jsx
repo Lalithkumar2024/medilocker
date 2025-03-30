@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const DoctorDashboard = ({ doctorName="John" }) => {
   const [leaveReason, setLeaveReason] = useState("");
@@ -36,6 +38,7 @@ const DoctorDashboard = ({ doctorName="John" }) => {
 
   return (
     <div className="doctordashboard">
+      <Header/>
         <section className="doctordashboardsection">
             <div className="container mt-4">
             <h2 className="text-start">Doctor Dashboard</h2>
@@ -108,7 +111,7 @@ const DoctorDashboard = ({ doctorName="John" }) => {
                 </div>
                 <div className="col-md-6 d-flex align-items-center">
                     <button
-                    className="btn btn-success"
+                    className="btn btn-success leave-btn"
                     onClick={handleApplyLeave}
                     disabled={!leaveReason || !leaveDate}
                     >
@@ -125,6 +128,7 @@ const DoctorDashboard = ({ doctorName="John" }) => {
             </div>
             </div>
         </section>
+      <Footer/>
     </div>
   );
 };
