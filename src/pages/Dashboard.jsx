@@ -51,14 +51,29 @@ const Dashboard = ({ userName = "Kumaran" }) => {
       setSelectedDoctor("");
       setAppointmentDate("");
       setAppointmentTime("");
+      Swal.fire(`Appointment Booked!`,`Appointment for ${selectedDoctor} on ${appointmentDate} at ${appointmentTime} Booked Successfully!`,"success");
     }
   };
 
-  const handleCancelAppointment = (index) => {
-    const updatedAppointments = appointments.filter((_, i) => i !== index);
-    setAppointments(updatedAppointments);
-  };
 
+  const handleCancelAppointment = (index) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to cancel this appointment?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d', 
+      confirmButtonText: 'Yes, cancel it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedAppointments = appointments.filter((_, i) => i !== index);
+        setAppointments(updatedAppointments);
+        Swal.fire("Cancelled!","The appointment has been cancelled.","success");
+      }
+    });
+  };
+  
   const getUnavailableTimes = () => {
     const doctor = doctors.find((doc) => doc.name === selectedDoctor);
     return doctor ? doctor.unavailableTimes : [];
@@ -69,8 +84,7 @@ const Dashboard = ({ userName = "Kumaran" }) => {
     const hours = now.getHours();
     
     if (hours < 6 || hours >= 8) {
-      // Swal.fire("Error","Sugar level data can only be uploaded between 6 AM and 8 AM.","error");
-      alert("Sugar level data can only be uploaded between 6 AM and 8 AM.");
+      Swal.fire("Error", "Sugar level data can only be uploaded between 6 AM and 8 AM.", "error");
       return;
     }
 
@@ -78,8 +92,10 @@ const Dashboard = ({ userName = "Kumaran" }) => {
       setSugarData([...sugarData, { time: now.toLocaleDateString(), beforeEating, afterEating }]);
       setBeforeEating("");
       setAfterEating("");
+      Swal.fire("Valued Added!","Sugar level Data Updated.","success");
     }
   };
+
   const generateChartData = () => {
     let dates = [];
     let today = new Date();
@@ -264,8 +280,7 @@ const Dashboard = ({ userName = "Kumaran" }) => {
                       </span>
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => handleCancelAppointment(index)}
-                      >
+                        onClick={() => handleCancelAppointment(index)}>
                         Cancel
                       </button>
                     </li>

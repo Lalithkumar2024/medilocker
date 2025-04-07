@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Swal from "sweetalert2";
 
 const DoctorDashboard = ({ doctorName = "John" }) => {
   const [leaveReason, setLeaveReason] = useState("");
@@ -19,6 +20,7 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
 
   const handleApplyLeave = () => {
     if (leaveReason && leaveDate) {
+      Swal.fire('Leave Applied!',`Leave applied successfully for ${leaveDate} due to "${leaveReason}"!`,'success');
       setLeaveApplied(true);
     }
   };
@@ -29,6 +31,7 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
       setAvailabilityDate("");
       setAvailabilityFrom("");
       setAvailabilityTo("");
+      Swal.fire("Schedule Added!",`Schedule Time on ${availabilityDate} Confrimed.`,"success");
     }
   };
 
@@ -176,7 +179,7 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
                 </button>
               </div>
             </div>
-            {leaveApplied && <div className="alert alert-success mt-3">Leave applied successfully for {leaveDate} due to "{leaveReason}"!</div>}
+            {/* {leaveApplied && <div className="alert alert-success mt-3">Leave applied successfully for {leaveDate} due to "{leaveReason}"!</div>} */}
           </div>
 
           
