@@ -3,16 +3,21 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const Documents = () => {
-  const [activeTab, setActiveTab] = useState("Documents");
+  const [activeTab, setActiveTab] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
 
   const data = {
     Documents: ["Medical Report.pdf", "Lab Test Results.docx", "Health Summary.txt"],
     Xrays: ["Chest X-ray.png", "Dental X-ray.jpg", "Spine MRI.jpeg"],
-    Prescriptions: ["Blood Pressure Medicine.pdf", "Diabetes Treatment.docx"],
+    Prescriptions: ["Blood Pressure Medicine.pdf", "Diabetes Treatment.docx","Fever Report.pdf"],
   };
 
   const handleTabChange = (tab) => setActiveTab(tab);
+
+  const displayedDocuments =
+    activeTab === "ALL"
+      ? Object.values(data).flat() 
+      : data[activeTab];
 
   return (
     <div className="document">
@@ -23,6 +28,12 @@ const Documents = () => {
 
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div>
+              <button
+                className={`btn me-2 ${activeTab === "ALL" ? "btn-success" : "btn-outline-success"}`}
+                onClick={() => handleTabChange("ALL")}
+              >
+                ALL
+              </button>
               {Object.keys(data).map((tab) => (
                 <button
                   key={tab}
@@ -42,7 +53,7 @@ const Documents = () => {
           </div>
 
           <div className="row justify-content-center">
-            {data[activeTab]
+            {displayedDocuments
               .filter((item) => item.toLowerCase().includes(searchTerm.toLowerCase()))
               .map((item, index) => (
                 <div key={index} className="col-md-4 d-flex justify-content-center">

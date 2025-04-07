@@ -41,6 +41,8 @@ const Header = () => {
               <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/" ? "active-link" : ""}`} href="/">Home</a></li>
               <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/about" ? "active-link" : ""}`} href="/about">About Us</a></li>
               <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/contact" ? "active-link" : ""}`} href="/contact">Contact Us</a></li>
+              <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/hospital" ? "active-link" : ""}`} href="/hospital">NearBy Hospitals</a></li>
+              <li className="nav-item"><a className={`nav-link btn-effect ${location.pathname === "/pharmacy" ? "active-link" : ""}`} href="/pharmacy">NearBy Pharmacys</a></li>
             </ul>
           </div>
           <div className="d-flex ms-auto align-items-center">

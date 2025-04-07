@@ -20,7 +20,7 @@ const AdminDashboard = ({ adminName = "Admin" }) => {
   const [patientAppointments, setPatientAppointments] = useState([
     { id: 1, 
       patient: "Kumaran", 
-      doctor: "Dr. Sam - Neurologist", 
+      doctor: "Dr. Sam - General", 
       date: "2025-03-08", 
       time: "10:30 AM" },
     { id: 2, 

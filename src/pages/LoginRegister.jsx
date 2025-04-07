@@ -52,7 +52,7 @@ function handleLogin(e) {
     return;
   }
 
-  const user = sampleUsers.find((user) => user.loginEmail === loginEmail && user.loginPassword === loginPassword);
+  const user = sampleUsers.find((user) => user.loginEmail === loginEmail && user.loginPassword === loginPassword && user.role === role);
 
   if (user) {
     localStorage.setItem("isLoggedIn", "true");
@@ -94,7 +94,8 @@ function handleSubmit(e) {
     Swal.fire("Error", "Passwords do not match", "error");
     return;
   }
-
+  const user = {signUpName,signUpEmail,signUpDob,signUpPhone,signUpPassword,signUpConfirmPassword,role};
+  console.log(user);
   Swal.fire("Success", "Registration Successful!", "success").then(() => {
     navigate("/login");
   });

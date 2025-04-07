@@ -13,7 +13,7 @@ const ManagePatient = () => {
         phone: "123-456-7890",
         gender: "Male",
         address: "123 Main St, Chennai, TN",
-        height: "5'9\"",
+        height: "5'9",
         weight: "70kg",
         bloodGroup: "O+",
         bloodPressure: "120/80",

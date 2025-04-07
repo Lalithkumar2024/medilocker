@@ -8,8 +8,8 @@ const Home = () =>{
         <div className="home">
             <Header/>
                 <section className="homesection">
-                    <h3 className="fw-bolder">Welcome to MediLocker...</h3>
-                    <p className="fw-light">Store your documents securely</p>
+                    <h3 className="fw-bolder text-black">Welcome to MediLocker...</h3>
+                    <p className="fw-light text-black">Store your documents securely</p>
                     <br />
                     <br />
                     <EmergencyLogin/>

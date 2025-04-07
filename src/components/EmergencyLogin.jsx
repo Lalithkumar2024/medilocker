@@ -11,7 +11,9 @@ const EmergencyLogin = ()=>{
 
     const sampleUsers = [
         { name: "kumaran", dob: "30-03-2025", role:"patient"},
-        { name: "john" ,dob: "30-03-2025", role: "doctor"}
+        { name: "ram" ,dob: "30-03-2025", role: "patient"},
+        {name:"desigan",dob:"30-03-2025",role:"patient"},
+        {name:"john",dob:"30-03-2025",role:"doctor"}
     ];
 
     function formatDate(inputDate) {
@@ -43,7 +45,7 @@ const EmergencyLogin = ()=>{
             navigate(user.role === "patient" ? "/dashboard" : "/doctordashboard");
             });
           } else {
-            Swal.fire("Error", "Invalid email or password.", "error");
+            Swal.fire("Error", "Invalid name or dob.", "error");
           }        
     }
 
@@ -75,29 +77,6 @@ const EmergencyLogin = ()=>{
                             autoComplete="off"
                             className="form-control"  />
                         <label for="floatingDate">Date of Birth</label>
-                    </div>
-                    {/* role */}
-                    <div className="mb-3 p-2">
-                        <label className="form-label d-block fw-medium text-start">Select Role:</label>
-                        <div className="d-flex align-items-center">
-                            <input type="radio" 
-                                id="doctor" 
-                                name="role" 
-                                value="doctor"
-                                checked={role === "doctor"} 
-                                onChange={(e) => setRole(e.target.value)}
-                                className="me-1" />
-                            <label htmlFor="doctor" className="me-3">Doctor</label>
-
-                            <input type="radio" 
-                                id="patient" 
-                                name="role" 
-                                value="patient"
-                                checked={role === "patient"} 
-                                onChange={(e) => setRole(e.target.value)}
-                                className="me-1" />
-                            <label htmlFor="patient">Patient</label>
-                        </div>
                     </div>
 
                     <div class="col-12 mt-4">

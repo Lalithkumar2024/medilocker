@@ -3,8 +3,9 @@ import './App.css';
 import Home from './pages/Home';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Hospital from './pages/Hospital';
+import Pharmacy from './pages/Pharmacy';
+import LoginRegister from './pages/LoginRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Profilepage from './pages/Profilepage';
@@ -14,7 +15,7 @@ import DoctorProfile from './pages/DoctorProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageDoctor from './pages/ManageDoctor';
 import ManagePatient from './pages/ManagePatient';
-import LoginRegister from './pages/LoginRegister';
+
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
           <Route path='/home' element={<Home />}></Route>
           <Route path='/about' element={<About />}></Route>
           <Route path='/contact' element={<Contact />}></Route>
+          <Route path='/hospital' element={<Hospital />}></Route>
+          <Route path='/pharmacy' element={<Pharmacy />}></Route>
           <Route path='/login' element={<LoginRegister/>}></Route>
           <Route path='/register' element={<LoginRegister/>}></Route>
           <Route path='/forgotpassword' element={<ForgotPassword/>}></Route>

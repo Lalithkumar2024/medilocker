@@ -14,14 +14,15 @@ const Profilepage = () => {
     height: "5'9",
     weight: "70kg",
     bloodGroup: "O+",
-    bloodPressure: "120/80",
+    bloodPressure: "Normal",
     sugarLevel: "Normal",
+    bloodDonationDate : "2024-02-25"
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
   const handleCancel = () => setIsEditing(false);
@@ -196,36 +197,56 @@ const Profilepage = () => {
               </div>
               <div className="col-md-6">
                 <div className="form-floating">
-                  <input 
-                    type="text" 
-                    id="floatingBloodPressure" 
-                    name="bloodPressure" 
-                    value={formData.bloodPressure} 
-                    onChange={handleChange} 
-                    disabled={!isEditing} 
-                    placeholder="Enter Patient Blood Pressure"
-                    required
-                    autoComplete="off"
-                    className="form-control"
-                  />
+                  <select
+                      id="floatingBloodPressure"
+                      name="bloodPressure"
+                      value={formData.bloodPressure}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="form-select"
+                      required>
+                    <option value="">Select Blood Pressure</option>
+                    <option value="Low">Low</option>
+                    <option value="Normal">Normal</option>
+                    <option value="High">High</option>
+                  </select>
                   <label htmlFor="floatingBloodPressure">Blood Pressure</label>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="form-floating">
+                  <select
+                      id="floatingSugarLevel"
+                      name="sugarLevel"
+                      value={formData.sugarLevel}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="form-select"
+                      required>
+                    <option value="">Select Sugar Level</option>
+                    <option value="Low">Low</option>
+                    <option value="Normal">Normal</option>
+                    <option value="High">High</option>
+                  </select>
+                  <label htmlFor="floatingSugarLevel">Sugar Level</label>
                 </div>
               </div>
               <div className="col-md-6">
                 <div className="form-floating">
                   <input 
-                    type="text" 
-                    id="floatingSugarLevel" 
-                    name="sugarLevel" 
-                    value={formData.sugarLevel} 
+                    type="date" 
+                    id="floatingBloodDonationDate" 
+                    name="bloodDonationDate" 
+                    value={formData.bloodDonationDate} 
                     onChange={handleChange} 
                     disabled={!isEditing} 
-                    placeholder="Enter Patient Sugaar Level"
+                    placeholder="Enter Patient Blood Donation Date"
                     required
                     autoComplete="off"
                     className="form-control"
                   />
-                  <label htmlFor="floatingSugarLevel">Sugar Level</label>
+                  <label htmlFor="floatingBloodDonationDate">Blood Donation Date</label>
                 </div>
               </div>
             </div>
