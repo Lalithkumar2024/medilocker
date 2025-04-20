@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Swal from "sweetalert2";
+import { addScheduleTime } from "../api/ScheduleService";
+import { addLeave } from "../api/LeaveService"; 
+import { getDoctorId } from "../api/DoctorService";
+import { getAllAppointments } from "../api/AppointmentService";
 
-const DoctorDashboard = ({ doctorName = "John" }) => {
+const DoctorDashboard = () => {
   const [leaveReason, setLeaveReason] = useState("");
   const [leaveDate, setLeaveDate] = useState("");
   const [leaveApplied, setLeaveApplied] = useState(false);
@@ -11,29 +15,76 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
   const [availabilityDate, setAvailabilityDate] = useState("");
   const [availabilityFrom, setAvailabilityFrom] = useState("");
   const [availabilityTo, setAvailabilityTo] = useState("");
+  const [appointments, setAppointments] = useState([]);
 
-  const appointments = [
-    { id: 1, patientName: "Kumaran", date: "2025-03-10", time: "10:00 AM" },
-    { id: 2, patientName: "Desigan", date: "2025-03-12", time: "2:00 PM" },
-    { id: 3, patientName: "Kumar", date: "2025-03-15", time: "4:30 PM" },
-  ];
+  const user = JSON.parse(localStorage.getItem("users"));
+  const userId = user.user_id;
+  const userName = user.name;
+  console.log("Logged-in user:", user);
 
-  const handleApplyLeave = () => {
+  useEffect(() => { 
+    fetchAppointments();
+  },[]);
+
+  const fetchAppointments = async () => {
+    try{
+      const response = await getAllAppointments();
+      const filtered = response.data.filter(item => item.doctorName === userName);
+
+      setAppointments(filtered);
+      console.log("Appointments :" , filtered);
+    }catch(error){
+      console.log("Error fetching appointments",error);
+    }
+  };
+
+  const handleApplyLeave = async () => {
     if (leaveReason && leaveDate) {
-      Swal.fire('Leave Applied!',`Leave applied successfully for ${leaveDate} due to "${leaveReason}"!`,'success');
-      setLeaveApplied(true);
-    }
-  };
+      const leaveData = {
+        leaveDate: leaveDate,
+        leaveReason: leaveReason,
+        leaveStatus: "Pending", 
+      };
+      
+      const doctor = await getDoctorId(userId);
+      const doctorId = doctor.data;
 
-  const handleAddAvailability = () => {
+      try {
+        await addLeave(doctorId, leaveData);
+        setLeaveApplied(true);
+        Swal.fire("Leave Applied!", `Leave applied successfully for ${leaveDate} due to "${leaveReason}"!`, "success");
+      } catch (error) {
+        console.error("Failed to apply leave", error);
+        Swal.fire("Error", "Failed to apply for leave. Please try again.", "error");
+      }
+    }
+  }; 
+
+  const handleAddAvailability = async () => {
     if (availabilityDate && availabilityFrom && availabilityTo) {
-      setAvailableTimes([...availableTimes, { date: availabilityDate, from: availabilityFrom, to: availabilityTo }]);
-      setAvailabilityDate("");
-      setAvailabilityFrom("");
-      setAvailabilityTo("");
-      Swal.fire("Schedule Added!",`Schedule Time on ${availabilityDate} Confrimed.`,"success");
+      const scheduleData = {
+        scheduleDate: availabilityDate,
+        fromTime: availabilityFrom,
+        toTime: availabilityTo
+      };
+
+      const doctor = await getDoctorId(userId);
+      const doctorId = doctor.data;
+  
+      try {
+        await addScheduleTime(doctorId, scheduleData);
+        setAvailableTimes([...availableTimes, scheduleData]);
+        setAvailabilityDate("");
+        setAvailabilityFrom("");
+        setAvailabilityTo("");
+        Swal.fire("Schedule Added!", `Schedule Time on ${availabilityDate} Confirmed.`, "success");
+      } catch (error) {
+        console.error("Failed to add availability", error);
+        Swal.fire("Error", "Failed to add schedule. Please try again.", "error");
+      }
     }
   };
+  
 
   return (
     <div className="doctordashboard">
@@ -41,8 +92,9 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
       <section className="doctordashboardsection">
         <div className="container mt-4">
           <h2 className="text-start">Doctor Dashboard</h2>
-          <h3 className="text-start mt-3">Welcome, Dr. {doctorName}!</h3>
+          <h3 className="text-start mt-3">Welcome, Dr. {userName}!</h3>
           
+          {/* appointments */}
           <div className="mt-5">
             <h4>Booked Appointments</h4>
             <hr className="border border-3 border-success" />
@@ -57,18 +109,20 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
               <tbody>
                 {appointments.map((appointment) => (
                   <tr key={appointment.id}>
-                    <td>{appointment.patientName}</td>
-                    <td>{appointment.date}</td>
-                    <td>{appointment.time}</td>
+                    <td>{appointment.patient.patientName}</td>
+                    <td>{appointment.appointmentDate}</td>
+                    <td>{appointment.appointmentTime}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
+          {/* schedule time */}
           <div className="mt-5">
             <h4>Available Times</h4>
             <hr className="border border-3 border-success" />
+
             <div className="row g-3 mt-2">
               <div className="col-md-4">
                 <div className="form-floating">
@@ -84,6 +138,7 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
                   <label htmlFor="floatingDate">Select Date</label>
                 </div>
               </div>
+
               <div className="col-md-4">
                 <div className="form-floating">
                   <input type="time"
@@ -98,6 +153,7 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
                   <label htmlFor="floatingFromTime">From</label>
                 </div>
               </div>
+
               <div className="col-md-4">
                 <div className="form-floating">
                   <input type="time" 
@@ -112,11 +168,13 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
                   <label htmlFor="floatingToTime">To</label>
                 </div>
               </div>
+
               <div className="col-md-12 d-flex justify-content-end">
                 <button className="btn btn-success leave-btn" onClick={handleAddAvailability} disabled={!availabilityDate || !availabilityFrom || !availabilityTo}>
                   Add Availability
                 </button>
               </div>
+
             </div>
 
             {availableTimes.length > 0 && (
@@ -131,9 +189,9 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
                 <tbody>
                   {availableTimes.map((slot, index) => (
                     <tr key={index}>
-                      <td>{slot.date}</td>
-                      <td>{slot.from}</td>
-                      <td>{slot.to}</td>
+                      <td>{slot.scheduleDate}</td>
+                      <td>{slot.fromTime}</td>
+                      <td>{slot.toTime}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -141,6 +199,7 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
             )}
           </div>
 
+          {/* leaves  */}
           <div className="mt-5">
             <h4>Apply for Leave</h4>
             <hr className="border border-3 border-success" />
@@ -148,14 +207,14 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
               <div className="col-md-6">
                 <div className="form-floating">
                   <input type="date" 
-                      id="floatingLeaveDate"
-                      name="leavedate"
-                      value={leaveDate} 
-                      onChange={(e) => setLeaveDate(e.target.value)} 
-                      placeholder="Enter your Leave Date"
-                      required
-                      autoComplete="off"
-                      className="form-control" />
+                    id="floatingLeaveDate"
+                    name="leavedate"
+                    value={leaveDate} 
+                    onChange={(e) => setLeaveDate(e.target.value)} 
+                    placeholder="Enter your Leave Date"
+                    required
+                    autoComplete="off"
+                    className="form-control" />
                   <label htmlFor="floatingLeaveDate">Select Leave Date</label>
                 </div>
               </div>
@@ -179,10 +238,8 @@ const DoctorDashboard = ({ doctorName = "John" }) => {
                 </button>
               </div>
             </div>
-            {/* {leaveApplied && <div className="alert alert-success mt-3">Leave applied successfully for {leaveDate} due to "{leaveReason}"!</div>} */}
-          </div>
 
-          
+          </div>          
         </div>
       </section>
       <Footer />

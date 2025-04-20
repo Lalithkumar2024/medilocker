@@ -1,87 +1,190 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import Swal from "sweetalert2";
+import { addAppointment, getAllAppointments, deleteAppointment } from "../api/AppointmentService";
+import { addData, getALLGraphData } from "../api/GraphService";
+import { getPatientId } from "../api/PatientService";
+import { getAllDoctors } from "../api/DoctorService";
+import { getAllScheduleTimes } from "../api/ScheduleService";
 
-const Dashboard = ({ userName = "Kumaran" }) => {
-  const [sugarData, setSugarData] = useState([ 
-    { time: getDate(-6), beforeEating: 110, afterEating: 140 },
-    { time: getDate(-5), beforeEating: 120, afterEating: 150 },
-    { time: getDate(-4), beforeEating: 115 },
-    { time: getDate(-3), beforeEating: 130, afterEating: 160 },
-    { time: getDate(-2), beforeEating: 125, afterEating: 155 },
-    { time: getDate(-1), beforeEating: 118, afterEating: 148 },
-    { time: getDate(0), beforeEating: null, afterEating: null },]);
+const Dashboard = () => {
+  const [sugarData, setSugarData] = useState([]);
   const [beforeEating, setBeforeEating] = useState("");
   const [afterEating, setAfterEating] = useState("");
   const [selectedRange, setSelectedRange] = useState("week");
 
+  const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState("");
+
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
   const [appointments, setAppointments] = useState([]);
 
-  const doctors = [
-    { name: "Dr. John - Cardiologist", unavailableTimes: ["10:00", "15:00"] },
-    { name: "Dr. Smith - Dermatologist", unavailableTimes: ["12:30", "16:00"] },
-    { name: "Dr. Sam - Neurologist", unavailableTimes: ["09:00", "14:00"] },
-    { name: "Dr. Johnson - Orthopedic", unavailableTimes: ["11:00", "17:30"] },
-  ];
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
 
-  function getDate(daysAgo) {
-    let date = new Date();
-    date.setDate(date.getDate() + daysAgo);
-    return date.toLocaleDateString();
-  }
+  const user = JSON.parse(localStorage.getItem("users"));
+  const userId = user.user_id;
+  const userName = user.name;
+  console.log("Logged-in user:", user);
+
+  useEffect(() => {  
+    fetchGraphData();
+    fetchDoctors();
+    fetchAppointments();
+    loadScheduleTimes();
+    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
+      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
+    }
+  }, [appointmentDate,appointmentTime,selectedDoctor]);
+
+  const fetchGraphData = async () => {
+    try{
+    const patient = await getPatientId(userId);
+    const patientId = patient.data;
+
+    const res = await getALLGraphData(); 
+    const filteredData = res.data.filter(item => item.patient.patient_id === patientId);
     
+    const simplified = filteredData.map(item => ({
+      date: item.dataDate,
+      beforeEating: item.beforeEating,
+      afterEating: item.afterEating,
+    }));
+  
+    setSugarData(simplified);
+    console.log("sugar data:",simplified);
+    }catch(error){
+      console.log("error fetching sugar data",error);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    try{
+      const patient = await getPatientId(userId);
+      const patientId = patient.data;
+
+      const response = await getAllAppointments();
+      const filtered = response.data.filter(item => item.patient.patient_id === patientId);
+
+      setAppointments(filtered);
+      console.log("Appointments :" , filtered);
+    }catch(error){
+      console.log("Error fetching appointments",error);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const res = await getAllDoctors();
+      setDoctors(res.data);
+      console.log("doctors :",res.data); 
+    } catch (error) {
+      console.error("Failed to fetch doctors", error);
+    }
+  };
+
+  const loadScheduleTimes = async () => {
+    if (selectedDoctor) {
+      const slots = await scheduleTime(selectedDoctor);
+      setAvailableTimeSlots(slots);
+    } else {
+      setAvailableTimeSlots([]);
+    }
+  };
+
+  const isTimeAvailable = () => {
+    if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
+  
+    return availableTimeSlots.some(slot => {
+      return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
+    });
+  };
+
   const handleChange = (e) => {
     setSelectedDoctor(e.target.value);
   };
 
-  const handleBookAppointment = () => {
+  const handleBookAppointment = async() => {
     if (selectedDoctor && appointmentDate && appointmentTime) {
       const newAppointment = {
-        doctor: selectedDoctor,
-        date: appointmentDate,
-        time: appointmentTime,
+        doctorName: selectedDoctor,
+        appointmentDate: appointmentDate,
+        appointmentTime: appointmentTime,
       };
+      
+      const patient = await getPatientId(userId);
+      const patientId = patient.data;
+      console.log("PatientId :",patientId);
 
-      setAppointments([...appointments, newAppointment]);
-      setSelectedDoctor("");
-      setAppointmentDate("");
-      setAppointmentTime("");
-      Swal.fire(`Appointment Booked!`,`Appointment for ${selectedDoctor} on ${appointmentDate} at ${appointmentTime} Booked Successfully!`,"success");
+      try {
+        await addAppointment(patientId, newAppointment); 
+        setAppointments([...appointments, newAppointment]);
+        setSelectedDoctor("");
+        setAppointmentDate("");
+        setAppointmentTime("");
+        Swal.fire("Appointment Booked!", `Appointment for ${selectedDoctor} on ${appointmentDate} at ${appointmentTime} Booked Successfully!`, "success");
+      } catch (error) {
+        Swal.fire("Error", "Failed to book appointment.", "error");
+      }
     }
   };
 
-
-  const handleCancelAppointment = (index) => {
+  const handleCancelAppointment = async (index) => {
+    const appointmentToCancel = appointments[index];
+  
     Swal.fire({
       title: "Are you sure?",
       text: "Do you want to cancel this appointment?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d', 
+      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Yes, cancel it!',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedAppointments = appointments.filter((_, i) => i !== index);
-        setAppointments(updatedAppointments);
-        Swal.fire("Cancelled!","The appointment has been cancelled.","success");
+        try {
+          const id = appointmentToCancel.appointment_id;
+          console.log("appointment_id:",id);
+          await deleteAppointment(id); 
+          const updatedAppointments = appointments.filter((_, i) => i !== index);
+          setAppointments(updatedAppointments);
+          Swal.fire("Cancelled!", "The appointment has been cancelled.", "success");
+        } catch (error) {
+          Swal.fire("Error", "Failed to cancel appointment in backend.", "error");
+        }
       }
     });
   };
   
-  const getUnavailableTimes = () => {
-    const doctor = doctors.find((doc) => doc.name === selectedDoctor);
-    return doctor ? doctor.unavailableTimes : [];
+  const scheduleTime = async (selectedDoctorName) => {
+    try {
+      const response = await getAllScheduleTimes();
+      const allSchedules = response.data;
+      const doctorAvailableTimes = allSchedules.filter(
+        (schedule) => schedule.doctorName === selectedDoctorName
+      );
+      const availableSlots = doctorAvailableTimes.map((schedule) => ({
+        date: schedule.scheduleDate,
+        from: schedule.fromTime,
+        to: schedule.toTime,
+      }));
+  
+      return availableSlots;
+    } catch (error) {
+      console.error("Failed to fetch schedule times:", error);
+      return [];
+    }
   };
 
-  const handleAddSugarData = () => {
+  const handleAddSugarData = async() => {
     const now = new Date();
     const hours = now.getHours();
+
+    const patient = await getPatientId(userId);
+    const patientId = patient.data;
+    console.log("PatientId :",patientId);
     
     if (hours < 6 || hours >= 8) {
       Swal.fire("Error", "Sugar level data can only be uploaded between 6 AM and 8 AM.", "error");
@@ -89,31 +192,43 @@ const Dashboard = ({ userName = "Kumaran" }) => {
     }
 
     if (beforeEating && afterEating) {
-      setSugarData([...sugarData, { time: now.toLocaleDateString(), beforeEating, afterEating }]);
-      setBeforeEating("");
-      setAfterEating("");
-      Swal.fire("Valued Added!","Sugar level Data Updated.","success");
+      const newData = {
+        beforeEating: parseInt(beforeEating),
+        afterEating: parseInt(afterEating)
+      };
+      try {
+        await addData(patientId, newData);
+        setSugarData([...sugarData, newData]);
+        setBeforeEating("");
+        setAfterEating("");
+        await fetchGraphData();
+        Swal.fire("Valued Added!", "Sugar level Data Updated.", "success");
+      } catch (error) {
+        Swal.fire("Error", "Failed to upload data.", "error");
+      }
     }
   };
 
   const generateChartData = () => {
     let dates = [];
     let today = new Date();
+  
     for (let i = 0; i < (selectedRange === "week" ? 7 : 30); i++) {
       let date = new Date(today);
       date.setDate(today.getDate() - i);
-      dates.push(date.toLocaleDateString());
+      dates.push(date.toISOString().split("T")[0]);
     }
-
+  
     return dates
       .map((date) => {
-        let entry = sugarData.find((data) => data.time === date);
+        let entry = sugarData.find((data) => data.date === date); 
         return entry
-          ? entry
+          ? { ...entry, time: date }
           : { time: date, beforeEating: null, afterEating: null };
       })
       .reverse();
   };
+  
 
   return (
     <div className="dashboard">
@@ -123,6 +238,7 @@ const Dashboard = ({ userName = "Kumaran" }) => {
           <h2 className="text-start">Dashboard</h2>
           <h3 className="text-start mt-3">Welcome, {userName}!</h3>
 
+          {/* patient sugar detail graph */}
           <div className="mt-5">
             <h4>Track Your Sugar Levels</h4>
             <hr className="border border-3 border-success" />
@@ -133,32 +249,37 @@ const Dashboard = ({ userName = "Kumaran" }) => {
                     type="number"
                     className="form-control"
                     id="beforeEating"
+                    name="beforeEating"
+                    autoComplete="off"
+                    required
                     placeholder="Before Eating"
                     value={beforeEating}
-                    onChange={(e) => setBeforeEating(e.target.value)}
-                  />
+                    onChange={(e) => setBeforeEating(e.target.value)}/>
                   <label htmlFor="beforeEating">Sugar Level (Before Eating)</label>
                 </div>
               </div>
+
               <div className="col-md-4">
                 <div className="form-floating">
                   <input
                     type="number"
                     className="form-control"
                     id="afterEating"
+                    name="afterEating"
+                    autoComplete="off"
+                    required
                     placeholder="After Eating"
                     value={afterEating}
-                    onChange={(e) => setAfterEating(e.target.value)}
-                  />
+                    onChange={(e) => setAfterEating(e.target.value)}/>
                   <label htmlFor="afterEating">Sugar Level (After Eating)</label>
                 </div>
               </div>
+
               <div className="col-md-4 d-flex align-items-center">
                 <button
-                  className="btn btn-success w-100"
+                  className="btn button btn-success w-100"
                   onClick={handleAddSugarData}
-                  disabled={!beforeEating || !afterEating}
-                >
+                  disabled={!beforeEating || !afterEating}>
                   Add Data
                 </button>
               </div>
@@ -171,15 +292,13 @@ const Dashboard = ({ userName = "Kumaran" }) => {
             <hr className="border border-3 border-success" />
             <div className="d-flex">
               <button
-                className={`btn ${selectedRange === "week" ? "btn-success" : "btn-outline-success"} me-2`}
-                onClick={() => setSelectedRange("week")}
-              >
+                className={`btn button ${selectedRange === "week" ? "btn-success" : "btn-outline-success"} me-2`}
+                onClick={() => setSelectedRange("week")}>
                 Weekly View
               </button>
               <button
-                className={`btn ${selectedRange === "month" ? "btn-success" : "btn-outline-success"}`}
-                onClick={() => setSelectedRange("month")}
-              >
+                className={`btn button ${selectedRange === "month" ? "btn-success" : "btn-outline-success"}`}
+                onClick={() => setSelectedRange("month")}>
                 Monthly View
               </button>
             </div>
@@ -187,107 +306,102 @@ const Dashboard = ({ userName = "Kumaran" }) => {
 
           <div className="mt-5">
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={generateChartData()}>
-                <XAxis dataKey="time" />
+             <LineChart data={generateChartData()}>
+                 <XAxis dataKey="time" />
                 <YAxis />
                 <Tooltip />
                 <Legend />               
                 <Line type="monotone" dataKey="beforeEating" stroke="#8884d8" strokeWidth={3} dot={{ r: 5 }} />
                 <Line type="monotone" dataKey="afterEating" stroke="#82ca9d" strokeWidth={3} dot={{ r: 5 }} />
-              </LineChart>
+              </LineChart>  
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* book appointment */}
         <div className="mt-5">
-               <h4>Book an Appointment</h4>
-               <hr className="border border-3 border-success" />
-               <div className="row g-3 mt-2">
-                 <div className="col-md-4">
-                     <div className="form-floating">
-                     <select
-                      className="form-control"
-                      id="floatingDoctor"
-                      value={selectedDoctor}
-                      onChange={handleChange}>
-                      <option value="">Select a Doctor</option>
-                      {doctors.map((doctor, index) => (
-                        <option key={index} value={doctor.name}>
-                          {doctor.name}
-                        </option>
-                      ))}
-                    </select>
-                    <label htmlFor="floatingDoctor">Choose a Doctor</label>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-floating">
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="floatingDate"
-                      value={appointmentDate}
-                      onChange={(e) => setAppointmentDate(e.target.value)}
-                    />
-                    <label htmlFor="floatingDate">Select Date</label>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-floating">
-                    <input
-                      type="time"
-                      className="form-control"
-                      id="floatingTime"
-                      value={appointmentTime}
-                      onChange={(e) => setAppointmentTime(e.target.value)}
-                      disabled={!selectedDoctor}
-                    />
-                    <label htmlFor="floatingTime">Select Time</label>
-                  </div>
-                  {selectedDoctor && getUnavailableTimes().includes(appointmentTime) && (
-                    <p className="text-danger mt-2"> This time slot is unavailable!</p>
-                  )}
-                </div>
-                <div className="col-md-12 d-flex justify-content-end">
-                  <button
-                    className="btn btn-success appointment-btn"
-                    onClick={handleBookAppointment}
-                    disabled={
-                      !selectedDoctor ||
-                      !appointmentDate ||
-                      !appointmentTime ||
-                      getUnavailableTimes().includes(appointmentTime)
-                    }>
-                    Book Appointment
-                  </button>
+          <h4>Book an Appointment</h4>
+          <hr className="border border-3 border-success" />
+            <div className="row g-3 mt-2">
+              <div className="col-md-4">
+                <div className="form-floating">
+                  <select className="form-control"
+                    id="floatingDoctor"
+                    value={selectedDoctor}
+                    onChange={handleChange}>
+                  <option value="">Select a Doctor</option>
+                  {doctors.map((doctor, index) => (
+                    <option key={index} value={doctor.doctorName}>
+                      {doctor.doctorName} - {doctor.specialization}
+                    </option>
+                  ))}
+                  </select>
+                  <label htmlFor="floatingDoctor">Choose a Doctor</label>
                 </div>
               </div>
+
+              <div className="col-md-4">
+                <div className="form-floating">
+                  <input type="date"
+                    className="form-control"
+                    id="floatingDate"
+                    value={appointmentDate}
+                    onChange={(e) => setAppointmentDate(e.target.value)}/>
+                  <label htmlFor="floatingDate">Select Date</label>
+                </div>
+              </div>
+              
+              <div className="col-md-4">
+                <div className="form-floating">
+                  <input type="time"
+                    className="form-control"
+                    id="floatingTime"
+                    value={appointmentTime}
+                    onChange={(e) => setAppointmentTime(e.target.value)}
+                    disabled={!selectedDoctor}/>
+                  <label htmlFor="floatingTime">Select Time</label>
+                </div>
+              </div>
+
+              <div className="col-md-12 d-flex justify-content-end">
+                <button className="btn btn-success appointment-btn"
+                  onClick={handleBookAppointment}
+                  disabled={
+                    !selectedDoctor ||
+                    !appointmentDate ||
+                    !appointmentTime ||
+                    !isTimeAvailable()
+                  }>
+                    Book Appointment
+                </button>
+              </div>
+
             </div>
+        </div>
 
             {/* my appointments */}
-            <div className="mt-5">
-              <h4>My Appointments</h4>
-              <hr className="border border-3 border-success" />
+          <div className="mt-5">
+            <h4>My Appointments</h4>
+            <hr className="border border-3 border-success" />
               {appointments.length === 0 ? (
                 <p className="text-muted">No active appointments.</p>
               ) : (
-                <ul className="list-group">
-                  {appointments.map((appointment, index) => (
-                    <li key={index} className="list-group-item d-flex justify-content-between">
-                      <span>
-                        {appointment.date} -  {appointment.time} - {appointment.doctor}
-                      </span>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleCancelAppointment(index)}>
-                        Cancel
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+              <ul className="list-group">
+                {appointments.map((appointment, index) => (
+                  <li key={index} className="list-group-item d-flex justify-content-between">
+                  <span>
+                    {appointment.appointmentDate} -  {appointment.appointmentTime} - {appointment.doctorName}
+                  </span>
+                  <button className="btn btn-danger btn-sm"
+                    onClick={() => handleCancelAppointment(index)}>
+                    Cancel
+                  </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
       </section>
       <Footer />
     </div>

@@ -20,6 +20,7 @@ const Header = () => {
     localStorage.removeItem("userRole");
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("users");
     setRole(null);
     setIsLoggedIn(false);
     navigate("/");
@@ -47,35 +48,35 @@ const Header = () => {
           </div>
           <div className="d-flex ms-auto align-items-center">
             {!isLoggedIn ? (
-              <>
+              <div>
                 <a className="btn me-3 fw-bold rounded-pill btn-effect" href="/login">Log In</a>
                 <a className="btn btn-success fw-bold px-4 rounded-pill btn-effect" href="/register">Sign Up</a>
-              </>
+              </div>
             ) : (
               <div className="dropdown">
                 <button className="btn btn-light dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
                   <img width="24" height="24" src="https://img.icons8.com/material-sharp/24/gender-neutral-user.png" alt="user-icon"/>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end">
-                  {role === "admin" && (
-                    <>
+                  {role === "Admin" && (
+                    <div>
                       <li><a className="dropdown-item" href="/admindashboard">Admin Dashboard</a></li>
                       <li><a className="dropdown-item" href="/managedoctor">Manage Doctors</a></li>
                       <li><a className="dropdown-item" href="/managepatient">Manage Patients</a></li>
-                    </>
+                    </div>
                   )}
-                  {role === "doctor" && (
-                    <>
+                  {role === "Doctor" && (
+                    <div>
                       <li><a className="dropdown-item" href="/doctordashboard">My Dashboard</a></li>
                       <li><a className="dropdown-item" href="/doctorprofile">My Profile</a></li>
-                    </>
+                    </div>
                   )}
-                  {role === "patient" && (
-                    <>
+                  {role === "Patient" && (
+                    <div>
                       <li><a className="dropdown-item" href="/dashboard">My Dashboard</a></li>
                       <li><a className="dropdown-item" href="/profile">My Profile</a></li>
                       <li><a className="dropdown-item" href="/document">My Documents</a></li>
-                    </>
+                    </div>
                   )}
                   <li><hr className="dropdown-divider" /></li>
                   <li><a className="dropdown-item text-danger" href="/" onClick={handleLogout}>Logout</a></li>

@@ -1,31 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { emergencyLogin } from "../api/UserService";
 
 const EmergencyLogin = ()=>{
     const [name,setName] = useState('');
     const [dob,setDob] = useState('');
-    const [role,setRole] = useState('patient');
+    const [role,setRole] = useState('Patient');
 
     const navigate = useNavigate();
 
-    const sampleUsers = [
-        { name: "kumaran", dob: "30-03-2025", role:"patient"},
-        { name: "ram" ,dob: "30-03-2025", role: "patient"},
-        {name:"desigan",dob:"30-03-2025",role:"patient"},
-        {name:"john",dob:"30-03-2025",role:"doctor"}
-    ];
-
-    function formatDate(inputDate) {
-        const parts = inputDate.split("-");
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
-    const formattedDob = formatDate(dob);
-
-    function handleLogin(e){
+    async function handleLogin(e){
         e.preventDefault();
-
-        const user = sampleUsers.find((user) => user.name === name && user.dob === formattedDob && user.role === role);
 
         if (!name.trim()) {
             Swal.fire("Error", "Name cannot be empty", "error");
@@ -36,15 +22,25 @@ const EmergencyLogin = ()=>{
             return;
         }
 
-        if (user) {
+        const user = {
+            name: name,
+            dateOfBirth: dob,
+            role: role
+        }
 
+        console.log(user);
+        try {
+            const response = await emergencyLogin(user);
+            console.log("logged-in user : ",response.data);
             localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("userRole", user.role);
+            localStorage.setItem("userRole", role);
+            localStorage.setItem("users", JSON.stringify(response.data));
+
 
             Swal.fire("Success", "Login Successful!", "success").then(() => {
-            navigate(user.role === "patient" ? "/dashboard" : "/doctordashboard");
+            navigate("/dashboard");
             });
-          } else {
+          } catch(error) {
             Swal.fire("Error", "Invalid name or dob.", "error");
           }        
     }
@@ -55,7 +51,7 @@ const EmergencyLogin = ()=>{
                 <h2 className="card-title p-2">Emergency Login</h2>
                 <form action="#">
                     <div className="form-floating mb-3">
-                        <input type="email"
+                        <input type="text"
                             id="floatingInput"
                             name="text"
                             value={name}

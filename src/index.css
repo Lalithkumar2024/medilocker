@@ -49,9 +49,9 @@ section{
 }
 
 .emergencylogin{
-    width: 25rem;
-    justify-self: center ;
-    padding: 1rem;
+  width: 25rem;
+  justify-self: center ;
+  padding: 1rem;
 }
 
 .emergencylogin{
@@ -104,6 +104,7 @@ section{
 .forgotpassword .btn,
 .emergencylogin .btn,
 .appointment-btn,
+.button,
 .leave-btn{
   background: linear-gradient(to right, #8ffcab, #058f5a);
   font-size: large;
@@ -114,6 +115,7 @@ section{
 .forgotpassword .btn:hover,
 .emergencylogin .btn:hover,
 .appointment-btn:hover,
+.button:hover,
 .leave-btn:hover
 {
   color: black;
@@ -208,6 +210,7 @@ section{
 .link{
   text-decoration: none;
   color: #058f5a;
+  cursor: pointer;
 }
 
 .link:hover{

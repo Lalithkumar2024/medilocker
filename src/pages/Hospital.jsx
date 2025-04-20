@@ -15,10 +15,10 @@ L.Icon.Default.mergeOptions({
 
 const Hospital = () => {
 
-const [location, setLocation] = useState(null);
-const [hospitals, setHospitals] = useState([]);
+  const [location, setLocation] = useState(null);
+  const [hospitals, setHospitals] = useState([]);
   
-useEffect(() => {
+  useEffect(() => {
     navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -37,47 +37,45 @@ useEffect(() => {
           }
         }
       );
-}, []);
+  }, []);
   
-const fetchHospitals = async (lat, lng) => {
+  const fetchHospitals = async (lat, lng) => {
     try {
-        const response = await axios.get(
-          `https://nominatim.openstreetmap.org/search?format=json&q=hospital+near+${lat},${lng}`
-        );
-        setHospitals(response.data);
+      const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=hospital+near+${lat},${lng}`);
+      setHospitals(response.data);
     } catch (error) {
-        console.error("Error fetching hospitals:", error);
+      console.error("Error fetching hospitals:", error);
     }
-};
+  };
   
 
-return(
+  return(
     <div className="hospital">
-        <Header/>
-        <section className="hospitalsection">
-            <h3>Find NearBy Hospitals</h3>
-            <br />
-            <div>
-                {location ? (
-                    <MapContainer center={[location.lat, location.lng]} zoom={12} style={{ height: "500px", width: "100%" ,border:"5px solid",borderRadius:"50px",color:"#058f5a" }}>
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <Marker position={[location.lat, location.lng]}>
-                        <Popup>Your Location</Popup>
-                    </Marker>
-                    {hospitals.map((hospital, index) => (
-                        <Marker key={index} position={[hospital.lat, hospital.lon]}>
-                        <Popup>{hospital.display_name}</Popup>
-                        </Marker>
-                    ))}
-                    </MapContainer>
-                ) : (
-                    <p>Loading map...</p>
-                )}
-            </div>
-        </section> 
-        <Footer/>
+      <Header/>
+      <section className="hospitalsection">
+      <h3>Find NearBy Hospitals</h3>
+      <br />
+      <div>
+        {location ? (
+          <MapContainer center={[location.lat, location.lng]} zoom={12} style={{ height: "500px", width: "100%" ,border:"5px solid",borderRadius:"50px",color:"#058f5a" }}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <Marker position={[location.lat, location.lng]}>
+                <Popup>Your Location</Popup>
+              </Marker>
+              {hospitals.map((hospital, index) => (
+              <Marker key={index} position={[hospital.lat, hospital.lon]}>
+                <Popup>{hospital.display_name}</Popup>
+              </Marker>
+              ))}
+          </MapContainer>
+          ) : (
+            <p>Loading map...</p>
+          )}
+      </div>
+      </section> 
+      <Footer/>
     </div>
-    )
-}
+  );
+};
 
 export default Hospital;

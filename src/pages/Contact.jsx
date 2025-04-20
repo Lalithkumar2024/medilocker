@@ -5,35 +5,35 @@ import Swal from "sweetalert2";
 
 const Contact = () =>{
 
-const [name,setName] = useState('');
-const [email,setEmail] = useState('');
-const [subject,setSubject] = useState('');
-const [message,setMessage] = useState('');
+    const [name,setName] = useState('');
+    const [email,setEmail] = useState('');
+    const [subject,setSubject] = useState('');
+    const [message,setMessage] = useState('');
 
-const isValidEmail = (signUpEmail,loginEmail) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(signUpEmail,loginEmail);
+    const isValidEmail = (signUpEmail,loginEmail) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(signUpEmail,loginEmail);
 
-const handleSubmit = (e)=>{
-    e.preventDefault();
+    const handleSubmit = (e)=>{
+        e.preventDefault();
 
-     if (!name.trim()) {
-        Swal.fire("Error", "Name cannot be empty", "error");
-        return;
-      }
-      if (!isValidEmail(email)) {
-        Swal.fire("Error", "Please enter a valid email address", "error");
-        return;
-      }
-      if (!subject) {
-        Swal.fire("Error", "Subject cannot be empty", "error");
-        return;
-      }
-      if (!message) {
-        Swal.fire("Error", "Message cannot be empty", "error");
-        return;
-      }
+        if (!name.trim()) {
+            Swal.fire("Error", "Name cannot be empty", "error");
+            return;
+        }
+        if (!isValidEmail(email)) {
+            Swal.fire("Error", "Please enter a valid email address", "error");
+            return;
+        }
+        if (!subject) {
+            Swal.fire("Error", "Subject cannot be empty", "error");
+            return;
+        }
+        if (!message) {
+            Swal.fire("Error", "Message cannot be empty", "error");
+            return;
+        }
+        Swal.fire("Success", "Feedback Sent Successfully!", "success");
+    }   
 
-      Swal.fire("Success", "Feedback Sent Successfully!", "success");
-}
     return(
         <div className="contact">
            <Header/>
@@ -112,7 +112,7 @@ const handleSubmit = (e)=>{
                 </section>
            <Footer/>
         </div>
-    )
-}
+    );
+};
 
 export default Contact;
