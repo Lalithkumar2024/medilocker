@@ -21,22 +21,26 @@ const DoctorDashboard = () => {
   const userId = user.user_id;
   const userName = user.name;
   console.log("Logged-in user:", user);
+  const leave = leaveApplied;
+  console.log(leave);
+
 
   useEffect(() => { 
+    const fetchAppointments = async () => {
+      try{
+        const response = await getAllAppointments();
+        const filtered = response.data.filter(item => item.doctorName === userName);
+  
+        setAppointments(filtered);
+        console.log("Appointments :" , filtered);
+      }catch(error){
+        console.log("Error fetching appointments",error);
+      }
+    };
     fetchAppointments();
-  },[]);
+  },[userName]);
 
-  const fetchAppointments = async () => {
-    try{
-      const response = await getAllAppointments();
-      const filtered = response.data.filter(item => item.doctorName === userName);
-
-      setAppointments(filtered);
-      console.log("Appointments :" , filtered);
-    }catch(error){
-      console.log("Error fetching appointments",error);
-    }
-  };
+  
 
   const handleApplyLeave = async () => {
     if (leaveReason && leaveDate) {

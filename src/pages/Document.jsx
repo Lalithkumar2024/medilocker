@@ -15,22 +15,24 @@ const Documents = () => {
 
   const handleTabChange = (tab) => setActiveTab(tab);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
 
-  const fetchDocuments = async () => {
-    try {
-      const res = await getAllDocuments();
-      const allDocs = res.data;
-      const patient = await getPatientId(userId);
-      const patientId = patient.data;
-      const filteredDocs = allDocs.filter(doc => doc.patient.patient_id === patientId);
-      setDocuments(filteredDocs);
-    } catch (err) {
-      console.error("Error fetching documents:", err);
-    }
-  };
+  
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const res = await getAllDocuments();
+        const allDocs = res.data;
+        const patient = await getPatientId(userId);
+        const patientId = patient.data;
+        const filteredDocs = allDocs.filter(doc => doc.patient.patient_id === patientId);
+        setDocuments(filteredDocs);
+      } catch (err) {
+        console.error("Error fetching documents:", err);
+      }
+    };
+    fetchDocuments();
+  }, [userId]);
 
   const handleDownload = async (fileName) => {
     try {

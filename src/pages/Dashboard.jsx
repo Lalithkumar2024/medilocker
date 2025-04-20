@@ -29,78 +29,6 @@ const Dashboard = () => {
   const userName = user.name;
   console.log("Logged-in user:", user);
 
-  useEffect(() => {  
-    fetchGraphData();
-    fetchDoctors();
-    fetchAppointments();
-    loadScheduleTimes();
-    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
-      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
-    }
-  }, [appointmentDate,appointmentTime,selectedDoctor]);
-
-  const fetchGraphData = async () => {
-    try{
-    const patient = await getPatientId(userId);
-    const patientId = patient.data;
-
-    const res = await getALLGraphData(); 
-    const filteredData = res.data.filter(item => item.patient.patient_id === patientId);
-    
-    const simplified = filteredData.map(item => ({
-      date: item.dataDate,
-      beforeEating: item.beforeEating,
-      afterEating: item.afterEating,
-    }));
-  
-    setSugarData(simplified);
-    console.log("sugar data:",simplified);
-    }catch(error){
-      console.log("error fetching sugar data",error);
-    }
-  };
-
-  const fetchAppointments = async () => {
-    try{
-      const patient = await getPatientId(userId);
-      const patientId = patient.data;
-
-      const response = await getAllAppointments();
-      const filtered = response.data.filter(item => item.patient.patient_id === patientId);
-
-      setAppointments(filtered);
-      console.log("Appointments :" , filtered);
-    }catch(error){
-      console.log("Error fetching appointments",error);
-    }
-  };
-
-  const fetchDoctors = async () => {
-    try {
-      const res = await getAllDoctors();
-      setDoctors(res.data);
-      console.log("doctors :",res.data); 
-    } catch (error) {
-      console.error("Failed to fetch doctors", error);
-    }
-  };
-
-  const loadScheduleTimes = async () => {
-    if (selectedDoctor) {
-      const slots = await scheduleTime(selectedDoctor);
-      setAvailableTimeSlots(slots);
-    } else {
-      setAvailableTimeSlots([]);
-    }
-  };
-
-  const isTimeAvailable = () => {
-    if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
-  
-    return availableTimeSlots.some(slot => {
-      return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
-    });
-  };
 
   const handleChange = (e) => {
     setSelectedDoctor(e.target.value);
@@ -201,7 +129,7 @@ const Dashboard = () => {
         setSugarData([...sugarData, newData]);
         setBeforeEating("");
         setAfterEating("");
-        await fetchGraphData();
+        // await fetchGraphData();
         Swal.fire("Valued Added!", "Sugar level Data Updated.", "success");
       } catch (error) {
         Swal.fire("Error", "Failed to upload data.", "error");
@@ -228,7 +156,77 @@ const Dashboard = () => {
       })
       .reverse();
   };
+  useEffect(() => {  
+    const fetchGraphData = async () => {
+      try{
+      const patient = await getPatientId(userId);
+      const patientId = patient.data;
   
+      const res = await getALLGraphData(); 
+      const filteredData = res.data.filter(item => item.patient.patient_id === patientId);
+      
+      const simplified = filteredData.map(item => ({
+        date: item.dataDate,
+        beforeEating: item.beforeEating,
+        afterEating: item.afterEating,
+      }));
+    
+      setSugarData(simplified);
+      console.log("sugar data:",simplified);
+      }catch(error){
+        console.log("error fetching sugar data",error);
+      }
+    };
+  
+    const fetchAppointments = async () => {
+      try{
+        const patient = await getPatientId(userId);
+        const patientId = patient.data;
+  
+        const response = await getAllAppointments();
+        const filtered = response.data.filter(item => item.patient.patient_id === patientId);
+  
+        setAppointments(filtered);
+        console.log("Appointments :" , filtered);
+      }catch(error){
+        console.log("Error fetching appointments",error);
+      }
+    };
+  
+    const fetchDoctors = async () => {
+      try {
+        const res = await getAllDoctors();
+        setDoctors(res.data);
+        console.log("doctors :",res.data); 
+      } catch (error) {
+        console.error("Failed to fetch doctors", error);
+      }
+    };
+  
+    const loadScheduleTimes = async () => {
+      if (selectedDoctor) {
+        const slots = await scheduleTime(selectedDoctor);
+        setAvailableTimeSlots(slots);
+      } else {
+        setAvailableTimeSlots([]);
+      }
+    };
+  
+    const isTimeAvailable = () => {
+      if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
+    
+      return availableTimeSlots.some(slot => {
+        return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
+      });
+    };
+    fetchGraphData();
+    fetchDoctors();
+    fetchAppointments();
+    loadScheduleTimes();
+    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
+      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
+    }
+  }, [appointmentDate,appointmentTime,selectedDoctor,availableTimeSlots,userId]);
 
   return (
     <div className="dashboard">
@@ -369,8 +367,8 @@ const Dashboard = () => {
                   disabled={
                     !selectedDoctor ||
                     !appointmentDate ||
-                    !appointmentTime ||
-                    !isTimeAvailable()
+                    !appointmentTime 
+                    // !isTimeAvailable()
                   }>
                     Book Appointment
                 </button>
