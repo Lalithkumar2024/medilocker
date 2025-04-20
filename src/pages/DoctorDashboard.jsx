@@ -10,7 +10,6 @@ import { getAllAppointments } from "../api/AppointmentService";
 const DoctorDashboard = () => {
   const [leaveReason, setLeaveReason] = useState("");
   const [leaveDate, setLeaveDate] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [leaveApplied, setLeaveApplied] = useState(false);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [availabilityDate, setAvailabilityDate] = useState("");
@@ -22,6 +21,10 @@ const DoctorDashboard = () => {
   const userId = user.user_id;
   const userName = user.name;
   console.log("Logged-in user:", user);
+
+  useEffect(() => { 
+    fetchAppointments();
+  },[]);
 
   const fetchAppointments = async () => {
     try{
@@ -81,10 +84,7 @@ const DoctorDashboard = () => {
       }
     }
   };
-
-  useEffect(() => { 
-    fetchAppointments();
-  },[fetchAppointments]);  
+  
 
   return (
     <div className="doctordashboard">

@@ -29,22 +29,15 @@ const Dashboard = () => {
   const userName = user.name;
   console.log("Logged-in user:", user);
 
-  const loadScheduleTimes = async () => {
-    if (selectedDoctor) {
-      const slots = await scheduleTime(selectedDoctor);
-      setAvailableTimeSlots(slots);
-    } else {
-      setAvailableTimeSlots([]);
+  useEffect(() => {  
+    fetchGraphData();
+    fetchDoctors();
+    fetchAppointments();
+    loadScheduleTimes();
+    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
+      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
     }
-  };
-
-  const isTimeAvailable = () => {
-    if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
-  
-    return availableTimeSlots.some(slot => {
-      return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
-    });
-  };
+  }, [appointmentDate,appointmentTime,selectedDoctor]);
 
   const fetchGraphData = async () => {
     try{
@@ -92,6 +85,22 @@ const Dashboard = () => {
     }
   };
 
+  const loadScheduleTimes = async () => {
+    if (selectedDoctor) {
+      const slots = await scheduleTime(selectedDoctor);
+      setAvailableTimeSlots(slots);
+    } else {
+      setAvailableTimeSlots([]);
+    }
+  };
+
+  const isTimeAvailable = () => {
+    if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
+  
+    return availableTimeSlots.some(slot => {
+      return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
+    });
+  };
 
   const handleChange = (e) => {
     setSelectedDoctor(e.target.value);
@@ -220,15 +229,6 @@ const Dashboard = () => {
       .reverse();
   };
   
-  useEffect(() => {  
-    fetchGraphData();
-    fetchDoctors();
-    fetchAppointments();
-    loadScheduleTimes();
-    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
-      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
-    }
-  }, [appointmentDate, appointmentTime, selectedDoctor, loadScheduleTimes, isTimeAvailable,fetchAppointments,fetchGraphData]);
 
   return (
     <div className="dashboard">

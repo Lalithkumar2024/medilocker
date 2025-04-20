@@ -15,6 +15,10 @@ const Documents = () => {
 
   const handleTabChange = (tab) => setActiveTab(tab);
 
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
   const fetchDocuments = async () => {
     try {
       const res = await getAllDocuments();
@@ -87,10 +91,6 @@ const Documents = () => {
     return matchesTab && matchesSearch;
   });
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
-  
   return (
     <div className="document">
       <Header />
