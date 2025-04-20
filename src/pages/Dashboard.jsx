@@ -29,6 +29,24 @@ const Dashboard = () => {
   const userName = user.name;
   console.log("Logged-in user:", user);
 
+  const loadScheduleTimes = async () => {
+    if (selectedDoctor) {
+      const slots = await scheduleTime(selectedDoctor);
+      setAvailableTimeSlots(slots);
+    } else {
+      setAvailableTimeSlots([]);
+    }
+  };
+
+  const isTimeAvailable = () => {
+    if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
+  
+    return availableTimeSlots.some(slot => {
+      return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
+    });
+  };
+
+  
   useEffect(() => {  
     fetchGraphData();
     fetchDoctors();
@@ -85,22 +103,6 @@ const Dashboard = () => {
     }
   };
 
-  const loadScheduleTimes = async () => {
-    if (selectedDoctor) {
-      const slots = await scheduleTime(selectedDoctor);
-      setAvailableTimeSlots(slots);
-    } else {
-      setAvailableTimeSlots([]);
-    }
-  };
-
-  const isTimeAvailable = () => {
-    if (!appointmentTime || !appointmentDate || availableTimeSlots.length === 0) return false;
-  
-    return availableTimeSlots.some(slot => {
-      return slot.date === appointmentDate && appointmentTime >= slot.from && appointmentTime <= slot.to;
-    });
-  };
 
   const handleChange = (e) => {
     setSelectedDoctor(e.target.value);

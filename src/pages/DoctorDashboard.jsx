@@ -10,6 +10,7 @@ import { getAllAppointments } from "../api/AppointmentService";
 const DoctorDashboard = () => {
   const [leaveReason, setLeaveReason] = useState("");
   const [leaveDate, setLeaveDate] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [leaveApplied, setLeaveApplied] = useState(false);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [availabilityDate, setAvailabilityDate] = useState("");

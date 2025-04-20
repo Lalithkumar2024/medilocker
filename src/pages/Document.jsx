@@ -15,6 +15,7 @@ const Documents = () => {
 
   const handleTabChange = (tab) => setActiveTab(tab);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchDocuments();
   }, []);
