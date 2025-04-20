@@ -15,11 +15,6 @@ const Documents = () => {
 
   const handleTabChange = (tab) => setActiveTab(tab);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
-
   const fetchDocuments = async () => {
     try {
       const res = await getAllDocuments();
@@ -92,6 +87,10 @@ const Documents = () => {
     return matchesTab && matchesSearch;
   });
 
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
+  
   return (
     <div className="document">
       <Header />

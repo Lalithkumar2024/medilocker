@@ -46,17 +46,6 @@ const Dashboard = () => {
     });
   };
 
-
-  useEffect(() => {  
-    fetchGraphData();
-    fetchDoctors();
-    fetchAppointments();
-    loadScheduleTimes();
-    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
-      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
-    }
-  }, [appointmentDate, appointmentTime, selectedDoctor, loadScheduleTimes, isTimeAvailable,fetchAppointments,fetchGraphData]);
-
   const fetchGraphData = async () => {
     try{
     const patient = await getPatientId(userId);
@@ -231,6 +220,15 @@ const Dashboard = () => {
       .reverse();
   };
   
+  useEffect(() => {  
+    fetchGraphData();
+    fetchDoctors();
+    fetchAppointments();
+    loadScheduleTimes();
+    if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
+      Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
+    }
+  }, [appointmentDate, appointmentTime, selectedDoctor, loadScheduleTimes, isTimeAvailable,fetchAppointments,fetchGraphData]);
 
   return (
     <div className="dashboard">

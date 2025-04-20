@@ -23,10 +23,6 @@ const DoctorDashboard = () => {
   const userName = user.name;
   console.log("Logged-in user:", user);
 
-  useEffect(() => { 
-    fetchAppointments();
-  },[fetchAppointments]);
-
   const fetchAppointments = async () => {
     try{
       const response = await getAllAppointments();
@@ -85,7 +81,10 @@ const DoctorDashboard = () => {
       }
     }
   };
-  
+
+  useEffect(() => { 
+    fetchAppointments();
+  },[fetchAppointments]);  
 
   return (
     <div className="doctordashboard">
