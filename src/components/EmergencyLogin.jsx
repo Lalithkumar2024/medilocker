@@ -7,7 +7,7 @@ const EmergencyLogin = ()=>{
     const [name,setName] = useState('');
     const [dob,setDob] = useState('');
     // const [role,setRole] = useState('Patient');
-
+    const role = "Patient";
     const navigate = useNavigate();
 
     async function handleLogin(e){
@@ -25,7 +25,7 @@ const EmergencyLogin = ()=>{
         const user = {
             name: name,
             dateOfBirth: dob,
-            role: "Patient"
+            role: role
         }
 
         console.log(user);
