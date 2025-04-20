@@ -37,7 +37,7 @@ const Dashboard = () => {
     if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
       Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
     }
-  }, [appointmentDate,appointmentTime,selectedDoctor]);
+  }, [appointmentDate, appointmentTime, selectedDoctor, loadScheduleTimes, isTimeAvailable]);
 
   const fetchGraphData = async () => {
     try{
