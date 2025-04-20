@@ -18,7 +18,7 @@ const Documents = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchDocuments();
-  }, []);
+  }, [fetchDocuments]);
 
   const fetchDocuments = async () => {
     try {

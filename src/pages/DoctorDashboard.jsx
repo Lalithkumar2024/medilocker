@@ -25,7 +25,7 @@ const DoctorDashboard = () => {
 
   useEffect(() => { 
     fetchAppointments();
-  },[]);
+  },[fetchAppointments]);
 
   const fetchAppointments = async () => {
     try{
