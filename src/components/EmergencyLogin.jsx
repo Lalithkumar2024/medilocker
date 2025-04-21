@@ -6,7 +6,6 @@ import { emergencyLogin } from "../api/UserService";
 const EmergencyLogin = ()=>{
     const [name,setName] = useState('');
     const [dob,setDob] = useState('');
-    // const [role,setRole] = useState('Patient');
     const role = "Patient";
     const navigate = useNavigate();
 
