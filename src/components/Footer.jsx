@@ -6,7 +6,7 @@ const Footer = ()=>{
     return(
         <div className="footer bd-footer bg-body-tertiary">
             <footer className="p-2">
-                <p className="pt-1 fs-6 fw-medium"><p>©</p> MediLocker | All Rights Reserved @ 2025.</p>
+                <p className="pt-1 fs-6 fw-medium">© MediLocker | All Rights Reserved @ 2025.</p>
             </footer>
         </div>
     )
