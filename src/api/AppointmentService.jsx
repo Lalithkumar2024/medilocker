@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/appointment';
+const API_BASE_URL = 'http://54.204.207.122:8080/appointment';
 
 export const addAppointment = (patientId, appointmentData) => {
   return axios.post(`${API_BASE_URL}/addAppointment/${patientId}`, appointmentData);

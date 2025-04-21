@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/document';
+const API_BASE_URL = 'http://54.204.207.122:8080/document';
 
 export const uploadDocument = (patientId, file) => {
   const formData = new FormData();

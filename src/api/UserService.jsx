@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080/users";
+const API_BASE_URL = 'http://54.204.207.122:8080/users';
 
 export const registerUser = (userData) => {
   return axios.post(`${API_BASE_URL}/addUser`, userData);
