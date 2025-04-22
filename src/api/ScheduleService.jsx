@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://54.204.207.122:8080/schedule';
+const API_BASE_URL = 'https://184.72.80.63/schedule';
 
 export const addScheduleTime = (doctorId, scheduleData) => {
   return axios.post(`${API_BASE_URL}/add/${doctorId}`, scheduleData);
