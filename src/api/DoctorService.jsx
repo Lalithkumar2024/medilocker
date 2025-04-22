@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://184.72.80.63/doctor';
+const API_BASE_URL = 'https://44.210.125.81/doctor';
 
 export const addDoctor = (doctorId, doctorData) => {
     return axios.post(`${API_BASE_URL}/addDoctor/${doctorId}`, doctorData);
