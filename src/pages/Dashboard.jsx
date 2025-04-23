@@ -134,17 +134,17 @@ const Dashboard = () => {
   };
 
   const handleAddSugarData = async() => {
-    // const now = new Date();
-    // const hours = now.getHours();
+    const now = new Date();
+    const hours = now.getHours();
 
     const patient = await getPatientId(userId);
     const patientId = patient.data;
     // console.log("PatientId :", patientId);
     
-    // if (hours < 6 || hours >= 8) {
-    //   Swal.fire("Error", "Sugar level data can only be uploaded between 6 AM and 8 AM.", "error");
-    //   return;
-    // }
+    if (hours < 6 || hours >= 8) {
+      Swal.fire("Error", "Sugar level data can only be uploaded between 6 AM and 8 AM.", "error");
+      return;
+    }
 
     if (beforeEating && afterEating) {
       const newData = {
@@ -311,7 +311,7 @@ const Dashboard = () => {
           </div>
 
           <div className="mt-5">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={350}>
              <LineChart data={generateChartData()}>
                  <XAxis dataKey="time" />
                 <YAxis />
