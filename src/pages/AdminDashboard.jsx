@@ -23,7 +23,7 @@ const AdminDashboard = () => {
     try {
       const response = await getAllLeaves();
       setDoctorLeaves(response.data);
-      console.log("leaves :",response.data);
+      // console.log("leaves :",response.data);
     } catch (error) {
       console.error("Error fetching doctor leaves:", error);
     }
@@ -33,7 +33,7 @@ const AdminDashboard = () => {
     try {
       const response = await getAllAppointments();
       setPatientAppointments(response.data);
-      console.log("appointments :",response.data);
+      // console.log("appointments :",response.data);
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }

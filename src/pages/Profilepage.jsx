@@ -39,12 +39,12 @@ const Profilepage = () => {
       
       const userId = storedUser.user_id;
       setUserId(userId);
-      console.log("UserId :",userId);
+      // console.log("UserId :",userId);
         
       const patient = await getPatientId(userId);
       const patientId = patient.data;
       SetPatientId(patientId);
-      console.log("PatientId :",patientId);
+      // console.log("PatientId :",patientId);
 
       const [patientRes, userRes] = await Promise.all([
         getPatient(patientId),

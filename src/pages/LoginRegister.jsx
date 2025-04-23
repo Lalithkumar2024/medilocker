@@ -53,11 +53,11 @@ const LoginRegister = () => {
             password: loginPassword,
             role: role,
         }
-        console.log(users);
+        // console.log(users);
 
         try {
             const response = await loginUser(users);
-            console.log(response.data);
+            // console.log(response.data);
             localStorage.setItem("users", JSON.stringify(response.data));
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("userEmail", loginEmail);
@@ -107,7 +107,7 @@ const LoginRegister = () => {
             confirmPassword: signUpConfirmPassword,
             role: role,
         };
-        console.log(user);
+        // console.log(user);
       
         try {
             await registerUser(user);

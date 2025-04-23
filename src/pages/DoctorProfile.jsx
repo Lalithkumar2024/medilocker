@@ -37,12 +37,12 @@ const DoctorProfile = () => {
 
       const userId = storedUser.user_id;
       setUserId(userId);
-      console.log("UserId :",userId);
+      // console.log("UserId :",userId);
 
       const doctor = await getDoctorId(userId);
       const doctorId = doctor.data;
       SetDoctorId(doctorId);
-      console.log("DoctorID :",doctorId)
+      // console.log("DoctorID :",doctorId)
 
       const [doctorRes, userRes] = await Promise.all([
         getDoctor(doctorId),

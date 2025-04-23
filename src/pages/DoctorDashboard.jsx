@@ -20,7 +20,7 @@ const DoctorDashboard = () => {
   const user = JSON.parse(localStorage.getItem("users"));
   const userId = user.user_id;
   const userName = user.name;
-  console.log("Logged-in user:", user);
+  // console.log("Logged-in user:", user);
   const leave = leaveApplied;
   console.log(leave);
 
@@ -32,7 +32,7 @@ const DoctorDashboard = () => {
         const filtered = response.data.filter(item => item.doctorName === userName);
   
         setAppointments(filtered);
-        console.log("Appointments :" , filtered);
+        // console.log("Appointments :" , filtered);
       }catch(error){
         console.log("Error fetching appointments",error);
       }

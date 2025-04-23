@@ -32,7 +32,7 @@ const ManageDoctor = () => {
     try {
       const response = await getAllDoctors();
       setDoctors(response.data);
-      console.log("Doctor Data :",response.data);
+      // console.log("Doctor Data :",response.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
     }
@@ -62,11 +62,11 @@ const ManageDoctor = () => {
     
       const userResponse = await registerUser(userPayload);
       const userId = userResponse.data.user_id;
-      console.log("userId :", userId);
+      // console.log("userId :", userId);
       
       const doctor = await getDoctorId(userId);
       const doctorId = doctor.data;
-      console.log("DoctorId :" ,doctorId); 
+      // console.log("DoctorId :" ,doctorId); 
     
       const doctorPayload = {
         specialization: formData.specialization,
@@ -97,9 +97,9 @@ const ManageDoctor = () => {
 
     setSelectedDoctor(doctor);
     const userId = selectedDoctor.users.user_id;
-    console.log("UserId : ",userId);
+    // console.log("UserId : ",userId);
     const doctorId =selectedDoctor.doctor_id;
-    console.log("DoctorId : ",doctorId);
+    // console.log("DoctorId : ",doctorId);
     
       try { 
         const updatedUser = {

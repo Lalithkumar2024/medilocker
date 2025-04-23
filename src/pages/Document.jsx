@@ -15,9 +15,6 @@ const Documents = () => {
 
   const handleTabChange = (tab) => setActiveTab(tab);
 
-
-  
-
   useEffect(() => {
     const fetchDocuments = async () => {
       try {

@@ -38,7 +38,7 @@ const ManagePatient = () => {
     try {
       const response = await getAllPatients();
       setPatients(response.data);
-      console.log("Patient Data:",response.data);
+      // console.log("Patient Data:",response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
     }
@@ -75,11 +75,11 @@ const ManagePatient = () => {
 
       const userResponse = await registerUser(userPayload);
       const userId = userResponse.data.user_id;
-      console.log("UserId : ",userId);
+      // console.log("UserId : ",userId);
   
       const patient = await getPatientId(userId);
       const patientId = patient.data;
-      console.log("PatientId : ",patientId); 
+      // console.log("PatientId : ",patientId); 
 
       const patientPayload = {
         height: formData.height,
@@ -114,9 +114,9 @@ const ManagePatient = () => {
 
     setSelectedPatient(patient);
     const userId = selectedPatient.users.user_id;
-    console.log("UserId : ",userId);
+    // console.log("UserId : ",userId);
     const patientId =selectedPatient.patient_id;
-    console.log("PatientId : ",patientId);
+    // console.log("PatientId : ",patientId);
 
     try { 
       const updatedUser = {
