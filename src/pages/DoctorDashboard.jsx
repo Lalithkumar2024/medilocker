@@ -2,7 +2,7 @@ import React, { useState , useEffect} from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Swal from "sweetalert2";
-import { addScheduleTime , getAllScheduleTimes } from "../api/ScheduleService";
+import { addScheduleTime } from "../api/ScheduleService";
 import { addLeave } from "../api/LeaveService"; 
 import { getDoctorId } from "../api/DoctorService";
 import { getAllAppointments } from "../api/AppointmentService";
@@ -40,23 +40,6 @@ const DoctorDashboard = () => {
     fetchAppointments();
   },[userName]);
 
-  useEffect(() => {
-    const fetchDoctorAvailability = async () => {
-      try {
-        const doctor = await getDoctorId(userId);
-        const doctorId = doctor.data;
-  
-        const response = await getAllScheduleTimes();
-        const filtered = response.data.filter(item => item.doctorId === doctorId);
-  
-        setAvailableTimes(filtered);
-      } catch (error) {
-        console.error("Error fetching availability", error);
-      }
-    };
-  
-    fetchDoctorAvailability();
-  }, [userId]);
   
 
   const handleApplyLeave = async () => {
@@ -88,21 +71,16 @@ const DoctorDashboard = () => {
         fromTime: availabilityFrom,
         toTime: availabilityTo
       };
+
+      const doctor = await getDoctorId(userId);
+      const doctorId = doctor.data;
   
       try {
-        const doctor = await getDoctorId(userId);
-        const doctorId = doctor.data;
-  
         await addScheduleTime(doctorId, scheduleData);
-
-        const updatedResponse = await getAllScheduleTimes();
-        const updatedAvailability = updatedResponse.data.filter(item => item.doctorId === doctorId);
-        setAvailableTimes(updatedAvailability);
-
+        setAvailableTimes([...availableTimes, scheduleData]);
         setAvailabilityDate("");
         setAvailabilityFrom("");
         setAvailabilityTo("");
-  
         Swal.fire("Schedule Added!", `Schedule Time on ${availabilityDate} Confirmed.`, "success");
       } catch (error) {
         console.error("Failed to add availability", error);
@@ -110,7 +88,6 @@ const DoctorDashboard = () => {
       }
     }
   };
-  
   
 
   return (
@@ -204,7 +181,7 @@ const DoctorDashboard = () => {
 
             </div>
 
-            {/* {availableTimes.length > 0 && (
+            {availableTimes.length > 0 && (
               <table className="table table-striped mt-3">
                 <thead>
                   <tr>
@@ -223,33 +200,7 @@ const DoctorDashboard = () => {
                   ))}
                 </tbody>
               </table>
-            )} */}
-            <table className="table table-striped mt-3">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>From</th>
-                  <th>To</th>
-                </tr>
-              </thead>
-              <tbody>
-                {availableTimes.length > 0 ? (
-                  availableTimes.map((slot, index) => (
-                    <tr key={index}>
-                      <td>{slot.scheduleDate}</td>
-                      <td>{slot.fromTime}</td>
-                      <td>{slot.toTime}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" className="text-center text-muted">
-                      No available times added yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            )}
           </div>
 
           {/* leaves  */}
