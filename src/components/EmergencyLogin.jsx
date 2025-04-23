@@ -30,7 +30,7 @@ const EmergencyLogin = ()=>{
         console.log(user);
         try {
             const response = await emergencyLogin(user);
-            console.log("logged-in user : ",response.data);
+            // console.log("logged-in user : ",response.data);
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("userRole", role);
             localStorage.setItem("users", JSON.stringify(response.data));

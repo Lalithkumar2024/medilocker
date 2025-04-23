@@ -220,10 +220,10 @@ const Dashboard = () => {
     });
   },[appointmentDate,appointmentTime,availableTimeSlots]);
 
-  useEffect(() => {  
-    fetchGraphData();
-    fetchDoctors();
-    fetchAppointments();
+  useEffect(async() => {  
+    await fetchGraphData();
+    await fetchDoctors();
+    await fetchAppointments();
     loadScheduleTimes();
     if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
       Swal.fire("Unavailable Time Slot","The selected time is not available for this doctor. Please choose a different time.","error");
