@@ -596,8 +596,7 @@ const Dashboard = () => {
       .reverse();
   };
 
-  useEffect(() => {  
-    
+  useEffect(()=>{
     const fetchAppointments = async () => {
       try {
         const patient = await getPatientId(userId);
@@ -612,7 +611,11 @@ const Dashboard = () => {
         console.log("Error fetching appointments", error);
       }
     };
-  
+
+    fetchAppointments();
+  },[userId]);
+
+  useEffect(()=>{
     const fetchDoctors = async () => {
       try {
         const res = await getAllDoctors();
@@ -622,7 +625,10 @@ const Dashboard = () => {
         console.error("Failed to fetch doctors", error);
       }
     };
-  
+    fetchDoctors();
+  },[]);
+
+  useEffect(()=>{
     const loadScheduleTimes = async () => {
       if (selectedDoctor) {
         const slots = await scheduleTime(selectedDoctor);
@@ -631,16 +637,16 @@ const Dashboard = () => {
         setAvailableTimeSlots([]);
       }
     };
-
-    fetchGraphData();
-    fetchDoctors();
-    fetchAppointments();
     loadScheduleTimes();
+  },[selectedDoctor])
+
+  useEffect(() => {  
+    fetchGraphData();
     
     if (selectedDoctor && appointmentTime && appointmentDate && !isTimeAvailable()) {
       Swal.fire("Unavailable Time Slot", "The selected time is not available for this doctor. Please choose a different time.", "error");
     }
-  }, [appointmentDate, appointmentTime, selectedDoctor, availableTimeSlots, userId, fetchGraphData,isTimeAvailable]);
+  }, [appointmentDate, appointmentTime, selectedDoctor, fetchGraphData,isTimeAvailable]);
 
   return (
     <div className="dashboard">
@@ -741,12 +747,12 @@ const Dashboard = () => {
                     id="floatingDoctor"
                     value={selectedDoctor}
                     onChange={handleChange}>
-                  <option value="">Select a Doctor</option>
-                  {doctors.map((doctor, index) => (
-                    <option key={index} value={doctor.doctorName}>
-                      {doctor.doctorName} - {doctor.specialization}
-                    </option>
-                  ))}
+                    <option value="">Select a Doctor</option>
+                    {doctors.map((doctor, index) => (
+                      <option key={index} value={doctor.doctorName}>
+                        {doctor.doctorName} - {doctor.specialization}
+                      </option>
+                    ))}
                   </select>
                   <label htmlFor="floatingDoctor">Choose a Doctor</label>
                 </div>
@@ -791,7 +797,7 @@ const Dashboard = () => {
             </div>
         </div>
 
-            {/* my appointments */}
+          {/* my appointments */}
           <div className="mt-5">
             <h4>My Appointments</h4>
             <hr className="border border-3 border-success" />
