@@ -181,7 +181,7 @@ const DoctorDashboard = () => {
 
             </div>
 
-            {availableTimes.length > 0 && (
+            {/* {availableTimes.length > 0 && (
               <table className="table table-striped mt-3">
                 <thead>
                   <tr>
@@ -200,7 +200,33 @@ const DoctorDashboard = () => {
                   ))}
                 </tbody>
               </table>
-            )}
+            )} */}
+            <table className="table table-striped mt-3">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>From</th>
+                  <th>To</th>
+                </tr>
+              </thead>
+              <tbody>
+                {availableTimes.length > 0 ? (
+                  availableTimes.map((slot, index) => (
+                    <tr key={index}>
+                      <td>{slot.scheduleDate}</td>
+                      <td>{slot.fromTime}</td>
+                      <td>{slot.toTime}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center text-muted">
+                      No available times added yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
 
           {/* leaves  */}
