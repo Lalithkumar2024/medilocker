@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://44.210.125.81/leave';
+const API_BASE_URL = 'https://medilocker-rmo3.onrender.com/leave';
 
 export const addLeave = (doctorId, leaveData) => {
     return axios.post(`${API_BASE_URL}/addLeave/${doctorId}`, leaveData);

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =  "https://44.210.125.81/graph";
+const API_BASE_URL =  "https://medilocker-rmo3.onrender.com/graph";
 
 export const addData = (patientId,graphData) => {
     return axios.post(`${API_BASE_URL}/add/${patientId}`,graphData);

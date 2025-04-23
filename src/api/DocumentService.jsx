@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://44.210.125.81/document';
+const API_BASE_URL = 'https://medilocker-rmo3.onrender.com/document';
 
 export const uploadDocument = (patientId, file) => {
   const formData = new FormData();

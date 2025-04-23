@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = 'https://44.210.125.81/users';
+const API_BASE_URL = 'https://medilocker-rmo3.onrender.com/users';
 
 export const registerUser = (userData) => {
   return axios.post(`${API_BASE_URL}/addUser`, userData);

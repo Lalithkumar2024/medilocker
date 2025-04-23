@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://44.210.125.81/schedule';
+const API_BASE_URL = 'https://medilocker-rmo3.onrender.com/schedule';
 
 export const addScheduleTime = (doctorId, scheduleData) => {
   return axios.post(`${API_BASE_URL}/add/${doctorId}`, scheduleData);
