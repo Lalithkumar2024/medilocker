@@ -2,7 +2,7 @@ import React, { useState , useEffect} from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Swal from "sweetalert2";
-import { addScheduleTime } from "../api/ScheduleService";
+import { addScheduleTime , getAllScheduleTimes } from "../api/ScheduleService";
 import { addLeave } from "../api/LeaveService"; 
 import { getDoctorId } from "../api/DoctorService";
 import { getAllAppointments } from "../api/AppointmentService";
@@ -40,6 +40,23 @@ const DoctorDashboard = () => {
     fetchAppointments();
   },[userName]);
 
+  useEffect(() => {
+    const fetchDoctorAvailability = async () => {
+      try {
+        const doctor = await getDoctorId(userId);
+        const doctorId = doctor.data;
+  
+        const response = await getAllScheduleTimes();
+        const filtered = response.data.filter(item => item.doctorId === doctorId);
+  
+        setAvailableTimes(filtered);
+      } catch (error) {
+        console.error("Error fetching availability", error);
+      }
+    };
+  
+    fetchDoctorAvailability();
+  }, [userId]);
   
 
   const handleApplyLeave = async () => {
@@ -71,16 +88,21 @@ const DoctorDashboard = () => {
         fromTime: availabilityFrom,
         toTime: availabilityTo
       };
-
-      const doctor = await getDoctorId(userId);
-      const doctorId = doctor.data;
   
       try {
+        const doctor = await getDoctorId(userId);
+        const doctorId = doctor.data;
+  
         await addScheduleTime(doctorId, scheduleData);
-        setAvailableTimes([...availableTimes, scheduleData]);
+
+        const updatedResponse = await getAllScheduleTimes();
+        const updatedAvailability = updatedResponse.data.filter(item => item.doctorId === doctorId);
+        setAvailableTimes(updatedAvailability);
+
         setAvailabilityDate("");
         setAvailabilityFrom("");
         setAvailabilityTo("");
+  
         Swal.fire("Schedule Added!", `Schedule Time on ${availabilityDate} Confirmed.`, "success");
       } catch (error) {
         console.error("Failed to add availability", error);
@@ -88,6 +110,7 @@ const DoctorDashboard = () => {
       }
     }
   };
+  
   
 
   return (

@@ -44,7 +44,7 @@ const LoginRegister = () => {
             return;
         }
         if (!isValidPassword(loginPassword)) {
-            Swal.fire("Error", "Password must be at least 8 characters, contain letters, numbers, and a special character.", "error");
+            Swal.fire("Error", "Password must be at least 8 characters, contain letters, numbers, and a special character or Invaild Password.", "error");
             return;
         }
 
